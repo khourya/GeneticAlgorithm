@@ -1,3 +1,9 @@
+# Directories
+.vs/
+x64/
+Debug/
+Release/
+
 # Prerequisites
 *.d
 
@@ -6,6 +12,10 @@
 *.lo
 *.o
 *.obj
+*.iobj
+*.ipdb
+*.pdb
+*.ilk
 
 # Precompiled Headers
 *.gch
