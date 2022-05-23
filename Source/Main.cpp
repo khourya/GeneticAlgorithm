@@ -2,10 +2,26 @@
 //
 
 #include <iostream>
+#include "GeneticAlgorithm.h"
+#include "Individuals.h"
 
 int main()
 {
+    srand(3);
     std::cout << "Hello World!\n";
+   
+    //                 = new DesignVariable(length, min, max);
+    DesignVariable* D1 = new DesignVariable(2, 0.0, 10.0);
+    DesignVariable* D2 = new DesignVariable(2, 0.0, 10.0);
+    DesignVariable* D3 = new DesignVariable(2, 0.0, 10.0);
+    std::vector<DesignVariable*> designVariables = { D1, D2, D3 };
+
+    GeneticAlgorithm* GA = new GeneticAlgorithm();
+    GA->Initialize(designVariables);
+    Individual* indy = GA->CreateIndividual();
+    indy->PrintChromosome();
+
+    std::cout << "check stuff, stud.";
 }
 
 // Run program: Ctrl + F5 or Debug > Start Without Debugging menu

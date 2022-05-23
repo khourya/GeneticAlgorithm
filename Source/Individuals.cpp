@@ -1,5 +1,6 @@
 #include "Individuals.h"
 
+/*
 Individual::Individual()
 {
     for (int i = 0; i < m_chromosomalLength; i++)
@@ -10,15 +11,14 @@ Individual::Individual()
     }
 }
 
-Individual::Individual(double wi, double hi, double Ki)
+Individual::Individual(std::vector<double> vars)
 {
-    std::vector<short> gene1 = decimalToBinary(wi, Variable::wi);
-    std::vector<short> gene2 = decimalToBinary(hi, Variable::hi);
-    std::vector<short> gene3 = decimalToBinary(Ki, Variable::Ki);
-
-    std::copy(gene1.begin(), gene1.end(), m_chromosome.begin());
-    std::copy(gene2.begin(), gene2.end(), m_chromosome.begin() + m_geneLength);
-    std::copy(gene3.begin(), gene3.end(), m_chromosome.begin() + m_geneLength + m_geneLength);
+    for (int i = 0; i < m_nVariables; i++)
+    {
+        int startCopyIndex = i * m_geneLength;
+        std::vector<short> gene = decimalToBinary(vars[i], Variable::var1);
+        std::copy(gene.begin(), gene.end(), m_chromosome.begin() + startCopyIndex);
+    }
 }
 
 Individual::Individual(std::vector<short> parent1, std::vector<short> parent2, double pMutation = 0, MutationType mutationType = MutationType::None)
@@ -47,6 +47,28 @@ Individual::Individual(std::vector<short> parent1, std::vector<short> parent2, d
     }
 }
 
+*/
+
+Individual::Individual(std::vector<DesignVariable*> designVariables)
+{
+    m_chromosomalLength = 0;
+    m_nVariables = designVariables.size();
+
+    for (DesignVariable* designVar : designVariables)
+    {
+        m_chromosomalLength = m_chromosomalLength + designVar->GetLength();
+    }
+
+    m_chromosome.resize(m_chromosomalLength);
+
+    for (int i = 0; i < m_chromosomalLength; i++)
+    {
+        int x = rand() % 100;
+        if (x > 50)
+            m_chromosome[i] = 1;
+    }
+}
+
 void Individual::PrintChromosome()
 {
     for (short elem : m_chromosome)
@@ -72,9 +94,9 @@ std::vector<short> Individual::GetChromosomeVector()
     return m_chromosome;
 }
 
-DesignVariables Individual::GetDesignVariables()
+DesignVariablesStruct Individual::GetDesignVariables()
 {
-    DesignVariables designVariables;
+    DesignVariablesStruct designVariables;
 
     std::vector<short>::const_iterator begin = m_chromosome.begin();
     std::vector<short>::const_iterator split1 = m_chromosome.begin() + m_geneLength;
@@ -85,17 +107,17 @@ DesignVariables Individual::GetDesignVariables()
     std::vector<short> gene2(split1, split2);
     std::vector<short> gene3(split2, end);
 
-    double wi = binaryToDecimal(gene1, Variable::wi);
-    double hi = binaryToDecimal(gene2, Variable::hi);
-    double Ki = binaryToDecimal(gene3, Variable::Ki);
+    double wi = binaryToDecimal(gene1, Variable::var1);
+    double hi = binaryToDecimal(gene2, Variable::var2);
+    double Ki = binaryToDecimal(gene3, Variable::var3);
     double hs = m_hTotal - (2. * hi);
     double ws = (m_wTotal - wi) / 2.;
 
-    designVariables.wi = wi;
-    designVariables.ws = ws;
-    designVariables.hi = hi;
-    designVariables.hs = hs;
-    designVariables.Ki = Ki;
+    designVariables.var1 = wi;
+    designVariables.var2 = ws;
+    designVariables.var3 = hi;
+    designVariables.var4 = hs;
+    designVariables.var5 = Ki;
 
     return designVariables;
 }
@@ -105,17 +127,17 @@ double Individual::binaryToDecimal(std::vector<short> gene, Variable variable)
     double varMin = -DBL_MAX;
     double varMax = DBL_MAX;
 
-    if (variable == Variable::wi)
+    if (variable == Variable::var1)
     {
         varMin = m_wiMinValue;
         varMax = m_wiMaxValue;
     }
-    else if (variable == Variable::hi)
+    else if (variable == Variable::var2)
     {
         varMin = m_hiMinValue;
         varMax = m_hiMaxValue;
     }
-    else if (variable == Variable::Ki)
+    else if (variable == Variable::var3)
     {
         varMin = m_KiMinValue;
         varMax = m_KiMaxValue;
@@ -139,17 +161,17 @@ std::vector<short> Individual::decimalToBinary(double x, Variable variable)
     double minTemp = -DBL_MAX;
     double maxTemp = DBL_MAX;
 
-    if (variable == Variable::wi)
+    if (variable == Variable::var1)
     {
         minTemp = m_wiMinValue;
         maxTemp = m_wiMaxValue;
     }
-    else if (variable == Variable::hi)
+    else if (variable == Variable::var2)
     {
         minTemp = m_hiMinValue;
         maxTemp = m_hiMaxValue;
     }
-    else if (variable == Variable::Ki)
+    else if (variable == Variable::var3)
     {
         minTemp = m_KiMinValue;
         maxTemp = m_KiMaxValue;
@@ -171,6 +193,34 @@ std::vector<short> Individual::decimalToBinary(double x, Variable variable)
             gene[i] = 0;
             maxTemp = midpoint;
             minTemp = minTemp;
+        }
+    }
+
+    return gene;
+}
+
+std::vector<short> Individual::decimalToBinary(double x, double x_min, double x_max)
+{
+    std::vector<short> gene(m_geneLength, 0);
+    double varMin = x_min;
+    double varMax = x_max;
+
+    for (int i = 0; i < m_geneLength; i++)
+    {
+        double rngTemp = x_max - x_min;
+        double midpoint = x_min + rngTemp / 2.;
+
+        if (x > midpoint)
+        {
+            gene[i] = 1;
+            x_max = x_max;
+            x_min = midpoint;
+        }
+        else
+        {
+            gene[i] = 0;
+            x_max = midpoint;
+            x_min = x_min;
         }
     }
 

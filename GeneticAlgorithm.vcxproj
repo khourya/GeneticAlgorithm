@@ -20,11 +20,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BaseTypesFunctions.cpp" />
+    <ClCompile Include="Source\DesignVariable.cpp" />
     <ClCompile Include="Source\Individuals.cpp" />
     <ClCompile Include="Source\Main.cpp" />
+    <ClCompile Include="Source\GeneticAlgorithm.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Source\BaseTypesFunctions.h" />
+    <ClInclude Include="Source\DesignVariable.h" />
+    <ClInclude Include="Source\GeneticAlgorithm.h" />
     <ClInclude Include="Source\Individuals.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
