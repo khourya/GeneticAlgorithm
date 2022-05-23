@@ -17,7 +17,7 @@ int main()
     std::vector<DesignVariable*> designVariables = { D1, D2, D3 };
 
     GeneticAlgorithm* GA = new GeneticAlgorithm();
-    GA->Initialize(designVariables);
+    GA->SetDesignVariables(designVariables);
     Individual* indy = GA->CreateIndividual();
     indy->PrintChromosome();
 

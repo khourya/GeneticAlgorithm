@@ -14,8 +14,8 @@ class GeneticAlgorithm
 {
 public:
     GeneticAlgorithm();
-    GeneticAlgorithm(int populationSize, int maxGenerations, double fitnessTolerance, double mutationProbability, MutationType mutationType);
-    void Initialize(std::vector<DesignVariable*> designVariables);
+    void SetPerformanceParameters(int populationSize, int maxGenerations, double fitnessTolerance, double mutationProbability, MutationType mutationType);
+    void SetDesignVariables(std::vector<DesignVariable*> designVariables);
 
     std::vector<DesignVariable*> GetDesignVariables() { return m_designVariables; }
 
@@ -41,11 +41,11 @@ public:
 
 private:
     // Genetic Algorithm Parameters
-    int m_initialPopulationSize = -1;
-    int m_populationSize = -1;
+    int m_initialPopulationSize = -INT_MAX;
+    int m_populationSize = -INT_MAX;
 
-    int m_nMaxGenerations = -1;
-    int m_currentGeneration = -1;
+    int m_nMaxGenerations = -INT_MAX;
+    int m_currentGeneration = -INT_MAX;
 
     double m_fitnessTolerance = DBL_MIN;
     MutationType m_mutationType = MutationType::None;
