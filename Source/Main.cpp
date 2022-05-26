@@ -2,6 +2,7 @@
 //
 
 #include <iostream>
+#include "../UnitTests/Source/UnitTests.h"
 #include "GeneticAlgorithm.h"
 #include "Individuals.h"
 
@@ -21,6 +22,7 @@ int main()
     Individual* indy = GA->CreateIndividual();
     indy->PrintChromosome();
 
+    fnUnitTests();
     std::cout << "check stuff, stud.";
 }
 

@@ -52,7 +52,7 @@ Individual::Individual(std::vector<short> parent1, std::vector<short> parent2, d
 Individual::Individual(std::vector<DesignVariable*> designVariables)
 {
     m_chromosomalLength = 0;
-    m_nVariables = designVariables.size();
+    m_nVariables = static_cast<int>(designVariables.size());
 
     for (DesignVariable* designVar : designVariables)
     {
