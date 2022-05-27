@@ -5,8 +5,10 @@
 #include "framework.h"
 #include "UnitTests.h"
 
+#include "TestBinaryDecimalConversion.h"
+
 // TODO: This is an example of a library function
-void fnUnitTests()
+bool RunUnitTests()
 {
 	std::vector<double> v1 = { 0.0, 0.0, 0.0 };
 	std::vector<double> v2 = { 1.0, 0.0, 0.0 };
@@ -14,4 +16,7 @@ void fnUnitTests()
 	if (assertEquals(v1, v2))
 		std::cout << "I called the library function!\n";
 
+	TestMinConversions();
+
+	return true;
 }

@@ -6,4 +6,4 @@
 
 #include "TestVector.h"
 
-void fnUnitTests();
+bool RunUnitTests();

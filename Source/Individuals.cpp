@@ -69,6 +69,39 @@ Individual::Individual(std::vector<DesignVariable*> designVariables)
     }
 }
 
+Individual::Individual(std::vector<DesignVariable*> designVariables, std::vector<double> vars)
+{
+    if (designVariables.size() != vars.size())
+    {
+        std::cout << "Trying to create an individual without properly specifying variables.\n";
+        return;
+    }
+
+    m_chromosomalLength = 0;
+    m_nVariables = static_cast<int>(designVariables.size());
+    m_variableValues.resize(designVariables.size());
+
+    for (DesignVariable* designVar : designVariables)
+    {
+        m_chromosomalLength = m_chromosomalLength + designVar->GetLength();
+    }
+
+    m_chromosome.resize(m_chromosomalLength);
+
+    size_t startingIndex = 0;
+    for (int i = 0; i < vars.size(); i++)
+    {
+        double var = vars[i];
+        DesignVariable* dVar = designVariables[i];
+
+
+        m_variableValues[i] = var;
+        std::vector<short> gene = decimalToBinary(var, dVar);
+        std::copy(gene.begin(), gene.end(), m_chromosome.begin() + startingIndex);
+        startingIndex = gene.size();
+    }
+}
+
 void Individual::PrintChromosome()
 {
     for (short elem : m_chromosome)
@@ -94,54 +127,17 @@ std::vector<short> Individual::GetChromosomeVector()
     return m_chromosome;
 }
 
-DesignVariablesStruct Individual::GetDesignVariables()
+std::vector<DesignVariable> Individual::GetDesignVariables()
 {
-    DesignVariablesStruct designVariables;
+    std::vector<DesignVariable> vars;
 
-    std::vector<short>::const_iterator begin = m_chromosome.begin();
-    std::vector<short>::const_iterator split1 = m_chromosome.begin() + m_geneLength;
-    std::vector<short>::const_iterator split2 = m_chromosome.begin() + m_geneLength + m_geneLength;
-    std::vector<short>::const_iterator end = m_chromosome.end();
-
-    std::vector<short> gene1(begin, split1);
-    std::vector<short> gene2(split1, split2);
-    std::vector<short> gene3(split2, end);
-
-    double wi = binaryToDecimal(gene1, Variable::var1);
-    double hi = binaryToDecimal(gene2, Variable::var2);
-    double Ki = binaryToDecimal(gene3, Variable::var3);
-    double hs = m_hTotal - (2. * hi);
-    double ws = (m_wTotal - wi) / 2.;
-
-    designVariables.var1 = wi;
-    designVariables.var2 = ws;
-    designVariables.var3 = hi;
-    designVariables.var4 = hs;
-    designVariables.var5 = Ki;
-
-    return designVariables;
+    return vars;
 }
 
-double Individual::binaryToDecimal(std::vector<short> gene, Variable variable)
+double Individual::binaryToDecimal(std::vector<short> gene, DesignVariable* designVariable)
 {
-    double varMin = -DBL_MAX;
-    double varMax = DBL_MAX;
-
-    if (variable == Variable::var1)
-    {
-        varMin = m_wiMinValue;
-        varMax = m_wiMaxValue;
-    }
-    else if (variable == Variable::var2)
-    {
-        varMin = m_hiMinValue;
-        varMax = m_hiMaxValue;
-    }
-    else if (variable == Variable::var3)
-    {
-        varMin = m_KiMinValue;
-        varMax = m_KiMaxValue;
-    }
+    double varMin = designVariable->GetMinValue();
+    double varMax = designVariable->GetMaxValue();
 
     double base10 = 0.;
     for (size_t i = 0; i < gene.size(); i++)
@@ -155,29 +151,13 @@ double Individual::binaryToDecimal(std::vector<short> gene, Variable variable)
     return base10;
 }
 
-std::vector<short> Individual::decimalToBinary(double x, Variable variable)
+std::vector<short> Individual::decimalToBinary(double x, DesignVariable* designVariable)
 {
-    std::vector<short> gene(m_geneLength, 0);
-    double minTemp = -DBL_MAX;
-    double maxTemp = DBL_MAX;
-
-    if (variable == Variable::var1)
-    {
-        minTemp = m_wiMinValue;
-        maxTemp = m_wiMaxValue;
-    }
-    else if (variable == Variable::var2)
-    {
-        minTemp = m_hiMinValue;
-        maxTemp = m_hiMaxValue;
-    }
-    else if (variable == Variable::var3)
-    {
-        minTemp = m_KiMinValue;
-        maxTemp = m_KiMaxValue;
-    }
+    std::vector<short> gene(designVariable->GetLength(), 0);
+    double minTemp = designVariable->GetMinValue();
+    double maxTemp = designVariable->GetMaxValue();
     
-    for (int i = 0; i < m_geneLength; i++)
+    for (int i = 0; i < designVariable->GetLength(); i++)
     {
         double rngTemp = maxTemp - minTemp;
         double midpoint = minTemp + rngTemp / 2.;

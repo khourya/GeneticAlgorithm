@@ -20,6 +20,20 @@ void GeneticAlgorithm::SetPerformanceParameters(int populationSize, int maxGener
 	m_mutationType = mutationType;
 }
 
+
+void GeneticAlgorithm::CreateInitialPopulation()
+{
+	for (int i = 0; i < m_initialPopulationSize; i++)
+	{
+		// TODO: use shared(?) pointers
+		Individual* individual = CreateIndividual();
+		m_population.push_back(individual);
+	}
+
+	m_populationSize = static_cast<int>(m_population.size());
+	m_currentGeneration = 1;
+}
+
 Individual* GeneticAlgorithm::CreateIndividual()
 {
 	Individual* individual = new Individual(m_designVariables);

@@ -2,27 +2,42 @@
 //
 
 #include <iostream>
-#include "../UnitTests/Source/UnitTests.h"
+
 #include "GeneticAlgorithm.h"
 #include "Individuals.h"
+#include "InputReader.h"
+
+#include "../UnitTests/Source/UnitTests.h"
 
 int main()
 {
-    srand(3);
-    std::cout << "Hello World!\n";
+    // Get Options for GA
+    Options GAOptions = ReadOptions();
+
+    srand(GAOptions.seed);
+    
+    RunUnitTests();
    
     //                 = new DesignVariable(length, min, max);
     DesignVariable* D1 = new DesignVariable(2, 0.0, 10.0);
     DesignVariable* D2 = new DesignVariable(2, 0.0, 10.0);
-    DesignVariable* D3 = new DesignVariable(2, 0.0, 10.0);
-    std::vector<DesignVariable*> designVariables = { D1, D2, D3 };
+    std::vector<DesignVariable*> designVariables = { D1, D2 };
 
     GeneticAlgorithm* GA = new GeneticAlgorithm();
+    GA->SetPerformanceParameters(GAOptions.nIndividuals,
+        GAOptions.nGenerations,
+        GAOptions.fitnessTolerance,
+        GAOptions.mutationProbability,
+        GAOptions.mutationType);
     GA->SetDesignVariables(designVariables);
+
     Individual* indy = GA->CreateIndividual();
     indy->PrintChromosome();
 
-    fnUnitTests();
+    GA->CreateInitialPopulation();
+    // GA->EvaluateFitness();
+
+    
     std::cout << "check stuff, stud.";
 }
 
